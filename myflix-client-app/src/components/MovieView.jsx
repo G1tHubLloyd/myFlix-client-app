@@ -37,7 +37,7 @@ function MovieView() {
     const movie = movies[movieId] || {};
 
     return (
-        <Container className="mt-4">
+        <Container fluid className="py-4 px-4">
             <Button variant="secondary" onClick={() => navigate(-1)} className="mb-3">
                 &larr; Back
             </Button>

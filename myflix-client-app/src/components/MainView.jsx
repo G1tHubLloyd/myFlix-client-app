@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import MovieCard from "./MovieCard";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Container } from "react-bootstrap";
 
 function MainView() {
     const [movies] = useState([
@@ -27,20 +27,68 @@ function MainView() {
             image: "https://via.placeholder.com/300x450?text=Dark+Knight",
             director: "Christopher Nolan",
             genre: "Action"
+        },
+        {
+            id: "4",
+            title: "Pulp Fiction",
+            description: "The lives of two mob hitmen, a boxer, and more intertwine.",
+            image: "https://via.placeholder.com/300x450?text=Pulp+Fiction",
+            director: "Quentin Tarantino",
+            genre: "Crime"
+        },
+        {
+            id: "5",
+            title: "Forrest Gump",
+            description: "The presidencies of Kennedy and Johnson unfold through the perspective of an Alabama man.",
+            image: "https://via.placeholder.com/300x450?text=Forrest+Gump",
+            director: "Robert Zemeckis",
+            genre: "Drama"
+        },
+        {
+            id: "6",
+            title: "Inception",
+            description: "A thief who steals corporate secrets through dream-sharing technology.",
+            image: "https://via.placeholder.com/300x450?text=Inception",
+            director: "Christopher Nolan",
+            genre: "Sci-Fi"
+        },
+        {
+            id: "7",
+            title: "The Matrix",
+            description: "A computer hacker learns about the true nature of reality.",
+            image: "https://via.placeholder.com/300x450?text=Matrix",
+            director: "The Wachowskis",
+            genre: "Sci-Fi"
+        },
+        {
+            id: "8",
+            title: "Goodfellas",
+            description: "The story of Henry Hill and his life in the mob.",
+            image: "https://via.placeholder.com/300x450?text=Goodfellas",
+            director: "Martin Scorsese",
+            genre: "Crime"
+        },
+        {
+            id: "9",
+            title: "The Silence of the Lambs",
+            description: "A young FBI cadet seeks the advice of an imprisoned cannibal.",
+            image: "https://via.placeholder.com/300x450?text=Silence",
+            director: "Jonathan Demme",
+            genre: "Thriller"
         }
     ]);
 
     return (
-        <div className="container mt-4">
-            <h2>My Movies</h2>
-            <Row>
+        <Container fluid className="py-4 px-4">
+            <h2 className="mb-4">My Movies</h2>
+            <Row className="g-4">
                 {movies.map((movie) => (
-                    <Col md={4} key={movie.id} className="mb-4">
+                    <Col xs={12} sm={6} md={4} lg={3} key={movie.id}>
                         <MovieCard movie={movie} />
                     </Col>
                 ))}
             </Row>
-        </div>
+        </Container>
     );
 }
 
