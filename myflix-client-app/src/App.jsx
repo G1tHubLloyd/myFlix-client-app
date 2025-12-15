@@ -15,7 +15,7 @@ function App() {
     // Check if user is already logged in
     const storedUser = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
-    
+
     if (storedUser && storedToken) {
       setUser(JSON.parse(storedUser));
       setToken(storedToken);
