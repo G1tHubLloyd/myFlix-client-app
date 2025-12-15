@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function SignupView() {
     const [username, setUsername] = useState("");
@@ -64,7 +64,7 @@ function SignupView() {
                                 </Button>
                             </Form>
                             <div className="text-center mt-3">
-                                Already have an account? <a href="/login">Login</a>
+                                Already have an account? <Link to="/login">Login</Link>
                             </div>
                         </Card.Body>
                     </Card>
