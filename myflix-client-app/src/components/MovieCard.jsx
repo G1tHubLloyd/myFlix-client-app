@@ -3,18 +3,42 @@ import { Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-function MovieCard({ movie }) {
+const API_URL = "https://myflix-api.onrender.com";
+
+function MovieCard({ movie, user, token }) {
     const handleFavorite = () => {
-        axios.post(`/users/demoUser/movies/${movie._id}`)
-            .then(() => alert("Added to favorites"))
-            .catch(err => console.error(err));
+        if (!user || !token) {
+            alert("Please log in to add favorites");
+            return;
+        }
+
+        axios.post(`${API_URL}/users/${user.username}/movies/${movie._id}`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(() => alert("✓ Added to favorites"))
+            .catch(err => {
+                console.error("Error:", err);
+                alert("Failed to add favorite: " + (err.response?.data?.message || err.message));
+            });
     };
 
     const handleRemoveFavorite = () => {
-        axios.delete(`/users/demoUser/movies/${movie._id}`)
-            .then(() => alert("Removed from favorites"))
-            .catch(err => console.error(err));
+        if (!user || !token) {
+            alert("Please log in to remove favorites");
+            return;
+        }
+
+        axios.delete(`${API_URL}/users/${user.username}/movies/${movie._id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(() => alert("✓ Removed from favorites"))
+            .catch(err => {
+                console.error("Error:", err);
+                alert("Failed to remove favorite: " + (err.response?.data?.message || err.message));
+            });
     };
+
+    const isFavorite = user?.FavoriteMovies?.includes(movie._id);
 
     return (
         <Card style={{ width: "100%" }} className="h-100">
@@ -28,8 +52,11 @@ function MovieCard({ movie }) {
                     <Link to={`/movies/${movie._id || movie.id}`} className="flex-grow-1">
                         <Button variant="primary" className="w-100">View Details</Button>
                     </Link>
-                    <Button variant="success" onClick={handleFavorite}>♥ Favorite</Button>
-                    <Button variant="secondary" onClick={handleRemoveFavorite}>Remove</Button>
+                    {isFavorite ? (
+                        <Button variant="danger" onClick={handleRemoveFavorite}>♥ Remove</Button>
+                    ) : (
+                        <Button variant="success" onClick={handleFavorite}>♡ Favorite</Button>
+                    )}
                 </div>
             </Card.Body>
         </Card>
