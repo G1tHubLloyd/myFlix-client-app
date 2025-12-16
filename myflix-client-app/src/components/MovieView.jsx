@@ -1,66 +1,83 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button, Container, Card, Row, Col } from "react-bootstrap";
+import axios from "axios";
 
-function MovieView() {
+function MovieView({ user, token, movies = [] }) {
     const { movieId } = useParams();
     const navigate = useNavigate();
+    const [message, setMessage] = useState("");
 
-    // Mock movie data (replace with API call later)
-    const movies = {
-        "1": {
-            title: "The Shawshank Redemption",
-            description: "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
-            image: "https://via.placeholder.com/300x450?text=Shawshank",
-            director: "Frank Darabont",
-            genre: "Drama",
-            year: 1994
-        },
-        "2": {
-            title: "The Godfather",
-            description: "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.",
-            image: "https://via.placeholder.com/300x450?text=Godfather",
-            director: "Francis Ford Coppola",
-            genre: "Crime",
-            year: 1972
-        },
-        "3": {
-            title: "The Dark Knight",
-            description: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest tests.",
-            image: "https://via.placeholder.com/300x450?text=Dark+Knight",
-            director: "Christopher Nolan",
-            genre: "Action",
-            year: 2008
-        }
+    // Find movie from passed props or use mock data
+    let movie = movies.find(m => m._id === movieId) || {};
+
+    const handleFavorite = () => {
+        axios.post(`https://myflix-api.onrender.com/users/${user.username}/movies/${movieId}`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(() => {
+                setMessage("✓ Added to favorites!");
+                setTimeout(() => setMessage(""), 2000);
+            })
+            .catch(err => {
+                setMessage("Failed to add to favorites");
+                console.error(err);
+            });
     };
 
-    const movie = movies[movieId] || {};
+    const handleRemoveFavorite = () => {
+        axios.delete(`https://myflix-api.onrender.com/users/${user.username}/movies/${movieId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(() => {
+                setMessage("✓ Removed from favorites!");
+                setTimeout(() => setMessage(""), 2000);
+            })
+            .catch(err => {
+                setMessage("Failed to remove from favorites");
+                console.error(err);
+            });
+    };
+
+    const isFavorite = user?.FavoriteMovies?.includes(movieId);
 
     return (
         <Container fluid className="py-4 px-4">
             <Button variant="secondary" onClick={() => navigate(-1)} className="mb-3">
                 &larr; Back
             </Button>
+            {message && <div className="alert alert-info">{message}</div>}
             <Card>
                 <Row className="g-0">
                     <Col md={4}>
-                        <Card.Img src={movie.image} alt={movie.title} />
+                        <Card.Img src={movie.ImagePath || movie.image || "https://via.placeholder.com/300x450"} alt={movie.Title || movie.title} />
                     </Col>
                     <Col md={8}>
                         <Card.Body>
-                            <Card.Title as="h2">{movie.title}</Card.Title>
+                            <Card.Title as="h2">{movie.Title || movie.title}</Card.Title>
                             <Card.Text>
-                                <strong>Description:</strong> {movie.description}
+                                <strong>Description:</strong> {movie.Description || movie.description}
                             </Card.Text>
                             <Card.Text>
-                                <strong>Director:</strong> {movie.director}
+                                <strong>Director:</strong> {movie.Director || movie.director}
                             </Card.Text>
                             <Card.Text>
-                                <strong>Genre:</strong> {movie.genre}
+                                <strong>Genre:</strong> {movie.Genre || movie.genre}
                             </Card.Text>
                             <Card.Text>
-                                <strong>Year:</strong> {movie.year}
+                                <strong>Year:</strong> {movie.Year || movie.year}
                             </Card.Text>
+                            <div className="d-flex gap-2 mt-3">
+                                {isFavorite ? (
+                                    <Button variant="danger" onClick={handleRemoveFavorite}>
+                                        ♥ Remove from Favorites
+                                    </Button>
+                                ) : (
+                                    <Button variant="success" onClick={handleFavorite}>
+                                        ♡ Add to Favorites
+                                    </Button>
+                                )}
+                            </div>
                         </Card.Body>
                     </Col>
                 </Row>
