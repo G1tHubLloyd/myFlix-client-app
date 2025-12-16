@@ -14,6 +14,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Restore login state from localStorage
@@ -28,25 +29,35 @@ function App() {
 
   // Fetch movies from API
   useEffect(() => {
-    axios.get(`${API_URL}/movies`)
-      .then(response => setMovies(response.data))
-      .catch(err => console.error("Failed to fetch movies:", err));
+    setLoading(true);
+    axios.get(`${API_URL}/movies`, { timeout: 10000 })
+      .then(response => {
+        console.log("Movies loaded:", response.data.length);
+        setMovies(response.data);
+      })
+      .catch(err => {
+        console.error("Failed to fetch movies:", err.message);
+        setMovies([]);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   // Fetch user data and update state when token changes
   useEffect(() => {
     if (token && user) {
       axios.get(`${API_URL}/users`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 10000
       })
         .then(response => {
           const foundUser = response.data.find(u => u.username === user.username);
           if (foundUser) {
+            console.log("User data updated");
             setUser(foundUser);
             localStorage.setItem("user", JSON.stringify(foundUser));
           }
         })
-        .catch(err => console.error("Failed to fetch user data:", err));
+        .catch(err => console.error("Failed to fetch user data:", err.message));
     }
   }, [token]);
 
@@ -77,7 +88,7 @@ function App() {
                   user={user}
                   token={token}
                   movies={movies}
-                  setMovies={setMovies}
+                  loading={loading}
                 />
               ) : (
                 <Navigate to="/login" replace />
